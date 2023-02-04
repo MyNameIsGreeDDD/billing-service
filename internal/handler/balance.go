@@ -87,19 +87,19 @@ func (h *Handler) show(c *gin.Context) {
 func (h *Handler) history(c *gin.Context) {
 	userId, err := strconv.ParseUint(c.Params.ByName("user_id"), 10, 64)
 	if err != nil {
-		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation")
+		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation userId")
 		return
 	}
 
 	limit, err := strconv.ParseUint(c.DefaultQuery("limit", "15"), 10, 64)
 	if err != nil {
-		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation")
+		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation limit")
 		return
 	}
 
 	page, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 64)
 	if err != nil {
-		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation")
+		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation page")
 		return
 	}
 

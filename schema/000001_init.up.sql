@@ -1,13 +1,13 @@
 CREATE TABLE users_balances
 (
-    id      bigserial,
+    id      bigserial primary key,
     user_id bigint unique               not null,
     balance bigint CHECK (balance >= 0) not null
 );
 
 CREATE TABLE reservations
 (
-    id         bigserial,
+    id         bigserial primary key,
     user_id    bigint                              not null,
     order_id   bigint                              not null,
     service_id bigint                              not null,
@@ -20,7 +20,7 @@ CREATE UNIQUE INDEX reservation ON reservations (user_id, order_id, service_id);
 
 CREATE TABLE purchases
 (
-    id         bigserial,
+    id         bigserial primary key,
     user_id    bigint                              not null,
     order_id   bigint                              not null,
     service_id bigint                              not null,
@@ -31,7 +31,7 @@ CREATE TABLE purchases
 
 CREATE TABLE transfers
 (
-    id           bigserial,
+    id           bigserial primary key,
     from_user_id bigint                              not null,
     to_user_id   bigint                              not null,
     value        bigint CHECK (value >= 0)           not null,

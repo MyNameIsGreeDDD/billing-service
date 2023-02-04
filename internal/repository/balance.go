@@ -12,6 +12,8 @@ const (
 	TransfersTable  string = "transfers"
 	ValueColumn            = "value"
 	CreatedAtColumn        = "created_at"
+	Desc                   = "DESC"
+	Asc                    = "ASC"
 )
 
 type BalanceRepository struct {
@@ -147,19 +149,22 @@ func (b BalanceRepository) TransactionsHistory(userId, limit, page uint64, order
 
 	query, args, err := buildTransactionQuery(orderBy, userId, limit, page)
 	if err != nil {
-		return transfers, fmt.Errorf("failed query build")
+		return nil, fmt.Errorf("failed query build")
 	}
+
 	rows, err := b.db.Query(query, args...)
 	if err != nil {
-		return transfers, fmt.Errorf("failed get history")
+		return nil, fmt.Errorf("failed get history")
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		var transfer billingService.Transfer
 
 		err = rows.Scan(&transfer.Id, &transfer.FromUserId, &transfer.ToUserId, &transfer.Value, &transfer.Comment, &transfer.CreatedAt)
 		if err != nil {
-			return transfers, fmt.Errorf("failed write result")
+			return nil, fmt.Errorf("failed write result")
 		}
 
 		transfers = append(transfers, transfer)
@@ -173,13 +178,18 @@ func buildTransactionQuery(orderBy string, userId, limit, page uint64) (string, 
 		From(TransfersTable).
 		Where(sq.Or{sq.Eq{"from_user_id": userId}, sq.Eq{"to_user_id": userId}})
 
-	if orderBy == "date" {
-		query = query.OrderBy(fmt.Sprintf("%s %s", CreatedAtColumn, "ASC"))
+	var orderOption string
+
+	switch orderBy {
+	case "sum":
+		orderOption = Desc
+	default:
+		orderOption = Asc
 	}
 
-	if orderBy == "sum" {
-		query = query.OrderBy(fmt.Sprintf("%s %s", ValueColumn, "DESC"))
-	}
-
-	return query.Limit(limit).Offset(limit*page - limit).PlaceholderFormat(sq.Dollar).ToSql()
+	return query.OrderBy(fmt.Sprintf("%s %s", CreatedAtColumn, orderOption)).
+		Limit(limit).
+		Offset(limit*page - limit).
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
 }
