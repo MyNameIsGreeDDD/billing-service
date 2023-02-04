@@ -1,14 +1,14 @@
 package handler
 
 import (
-	avito_test_case "avito-test-case"
+	billingService "billingService"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
 func (h *Handler) transfer(c *gin.Context) {
-	var transfer avito_test_case.TransferRequest
+	var transfer billingService.TransferRequest
 
 	err := c.ShouldBindJSON(&transfer)
 	if err != nil {
@@ -28,7 +28,7 @@ func (h *Handler) transfer(c *gin.Context) {
 }
 
 func (h *Handler) enrollment(c *gin.Context) {
-	var valueRequest avito_test_case.ValueRequest
+	var valueRequest billingService.ValueRequest
 
 	err := c.ShouldBindJSON(&valueRequest)
 	if err != nil {
@@ -47,7 +47,7 @@ func (h *Handler) enrollment(c *gin.Context) {
 	})
 }
 func (h *Handler) writeOff(c *gin.Context) {
-	var valueRequest avito_test_case.ValueRequest
+	var valueRequest billingService.ValueRequest
 
 	err := c.ShouldBindJSON(&valueRequest)
 	if err != nil {
@@ -86,13 +86,24 @@ func (h *Handler) show(c *gin.Context) {
 
 func (h *Handler) history(c *gin.Context) {
 	userId, err := strconv.ParseUint(c.Params.ByName("user_id"), 10, 64)
-	limit, err := strconv.ParseUint(c.DefaultQuery("limit", "15"), 10, 64)
-	page, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 64)
-	orderBy := c.DefaultQuery("orderBy", "date")
 	if err != nil {
 		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation")
 		return
 	}
+
+	limit, err := strconv.ParseUint(c.DefaultQuery("limit", "15"), 10, 64)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation")
+		return
+	}
+
+	page, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 64)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnprocessableEntity, "failed validation")
+		return
+	}
+
+	orderBy := c.DefaultQuery("orderBy", "date")
 
 	transactions, err := h.services.Balance.TransfersHistory(userId, limit, page, orderBy)
 	if err != nil {

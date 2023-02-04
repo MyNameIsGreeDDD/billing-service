@@ -1,8 +1,8 @@
 package service
 
 import (
-	avito_test_case "avito-test-case"
-	"avito-test-case/internal/repository"
+	billingService "billingService"
+	"billingService/internal/repository"
 	"fmt"
 )
 
@@ -34,7 +34,7 @@ func (u BalanceService) WriteOff(userId, value uint64) error {
 	return u.repo.WriteOff(userId, value)
 }
 
-func (u BalanceService) TransfersHistory(userId, limit, page uint64, orderBy string) ([]avito_test_case.Transfer, error) {
+func (u BalanceService) TransfersHistory(userId, limit, page uint64, orderBy string) ([]billingService.Transfer, error) {
 	transfers, err := u.repo.TransactionsHistory(userId, limit, page, orderBy)
 	if err != nil {
 		return nil, fmt.Errorf("%s", err.Error())

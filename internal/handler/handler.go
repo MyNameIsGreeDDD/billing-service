@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"avito-test-case/internal/service"
+	"billingService/internal/service"
 	"github.com/gin-gonic/gin"
 )
 

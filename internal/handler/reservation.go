@@ -1,13 +1,13 @@
 package handler
 
 import (
-	avito_test_case "avito-test-case"
+	billingService "billingService"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func (h *Handler) reservation(c *gin.Context) {
-	var reservation avito_test_case.ReservationRequest
+	var reservation billingService.ReservationRequest
 
 	err := c.ShouldBindJSON(&reservation)
 	if err != nil {
@@ -27,7 +27,7 @@ func (h *Handler) reservation(c *gin.Context) {
 }
 
 func (h *Handler) confirm(c *gin.Context) {
-	var reservation avito_test_case.ReservationRequest
+	var reservation billingService.ReservationRequest
 
 	err := c.ShouldBindJSON(&reservation)
 	if err != nil {

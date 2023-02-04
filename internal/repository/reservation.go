@@ -6,8 +6,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-const ReservationTable = "reservations"
-const PurchasesTable = "purchases"
+const (
+	ReservationTable = "reservations"
+	PurchasesTable   = "purchases"
+)
 
 type ReservationRepository struct {
 	db *sqlx.DB

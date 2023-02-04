@@ -1,10 +1,10 @@
 package main
 
 import (
-	avito_test_case "avito-test-case"
-	"avito-test-case/internal/handler"
-	"avito-test-case/internal/repository"
-	"avito-test-case/internal/service"
+	billingService "billingService"
+	"billingService/internal/handler"
+	"billingService/internal/repository"
+	"billingService/internal/service"
 	"github.com/spf13/viper"
 	"github.com/subosito/gotenv"
 	"log"
@@ -16,7 +16,7 @@ func main() {
 		log.Fatalf("failed init configs %s", err.Error())
 	}
 	if err := gotenv.Load(); err != nil {
-		log.Fatalf("failed init env %s", err.Error())
+		log.Fatalf("failed init .env %s", err.Error())
 	}
 
 	db, err := repository.NewPostgresDB(repository.DBConfig{
@@ -35,7 +35,7 @@ func main() {
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
-	srv := new(avito_test_case.Server)
+	srv := new(billingService.Server)
 	if err := srv.Run(os.Getenv("APP_PORT"), handlers.InitRoutes()); err != nil {
 		log.Fatalf("run server error %s", err.Error())
 	}

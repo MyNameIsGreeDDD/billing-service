@@ -1,7 +1,7 @@
 package service
 
 import (
-	"avito-test-case/internal/repository"
+	"billingService/internal/repository"
 )
 
 type ReservationService struct {

@@ -1,16 +1,18 @@
 package repository
 
 import (
-	avito_test_case "avito-test-case"
+	billingService "billingService"
 	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 )
 
-const BalancesTable string = "users_balances"
-const TransfersTable string = "transfers"
-const ValueColumn = "value"
-const CreatedAtColumn = "created_at"
+const (
+	BalancesTable   string = "users_balances"
+	TransfersTable  string = "transfers"
+	ValueColumn            = "value"
+	CreatedAtColumn        = "created_at"
+)
 
 type BalanceRepository struct {
 	db *sqlx.DB
@@ -21,7 +23,7 @@ func NewBalanceRepository(db *sqlx.DB) *BalanceRepository {
 }
 
 func (b BalanceRepository) UserBalance(userId uint64) (uint64, error) {
-	var balance avito_test_case.Balance
+	var balance billingService.Balance
 
 	query, args, err := sq.Select("*").
 		From(BalancesTable).
@@ -140,8 +142,8 @@ func (b BalanceRepository) WriteTransfer(from, to, value uint64, comment string)
 	return nil
 }
 
-func (b BalanceRepository) TransactionsHistory(userId, limit, page uint64, orderBy string) ([]avito_test_case.Transfer, error) {
-	var transfers []avito_test_case.Transfer
+func (b BalanceRepository) TransactionsHistory(userId, limit, page uint64, orderBy string) ([]billingService.Transfer, error) {
+	var transfers []billingService.Transfer
 
 	query, args, err := buildTransactionQuery(orderBy, userId, limit, page)
 	if err != nil {
@@ -153,7 +155,7 @@ func (b BalanceRepository) TransactionsHistory(userId, limit, page uint64, order
 	}
 
 	for rows.Next() {
-		var transfer avito_test_case.Transfer
+		var transfer billingService.Transfer
 
 		err = rows.Scan(&transfer.Id, &transfer.FromUserId, &transfer.ToUserId, &transfer.Value, &transfer.Comment, &transfer.CreatedAt)
 		if err != nil {

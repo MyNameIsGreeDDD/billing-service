@@ -1,7 +1,7 @@
 package repository
 
 import (
-	avito_test_case "avito-test-case"
+	billingService "billingService"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -11,7 +11,7 @@ type Balance interface {
 	WriteOff(userId, value uint64) error
 	Transfer(from, to, value uint64) error
 	WriteTransfer(from, to, value uint64, comment string) error
-	TransactionsHistory(userId, limit, page uint64, orderBy string) ([]avito_test_case.Transfer, error)
+	TransactionsHistory(userId, limit, page uint64, orderBy string) ([]billingService.Transfer, error)
 }
 type Reservation interface {
 	Reservation(userId, serviceId, orderId, value uint64) error

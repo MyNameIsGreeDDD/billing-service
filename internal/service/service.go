@@ -1,8 +1,8 @@
 package service
 
 import (
-	avito_test_case "avito-test-case"
-	"avito-test-case/internal/repository"
+	billingService "billingService"
+	"billingService/internal/repository"
 )
 
 type Balance interface {
@@ -10,7 +10,7 @@ type Balance interface {
 	Enrollment(userId, value uint64) error
 	WriteOff(userId, value uint64) error
 	Transfer(from, to, value uint64, comment string) error
-	TransfersHistory(userId, limit, page uint64, orderBy string) ([]avito_test_case.Transfer, error)
+	TransfersHistory(userId, limit, page uint64, orderBy string) ([]billingService.Transfer, error)
 }
 
 type Reservation interface {
