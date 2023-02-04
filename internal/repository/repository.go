@@ -3,6 +3,7 @@ package repository
 import (
 	avito_test_case "avito-test-case"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 type Balance interface {
@@ -12,6 +13,7 @@ type Balance interface {
 	Transfer(from, to, value uint64) error
 	WriteTransfer(from, to, value uint64, comment string) error
 	TransactionsHistory(userId, limit, page uint64, orderBy string) ([]avito_test_case.Transfer, error)
+	GetProceeds(firstDate, lastDate time.Time) ([]avito_test_case.Proceeds, error)
 }
 type Reservation interface {
 	Reservation(userId, serviceId, orderId, value uint64) error

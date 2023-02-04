@@ -18,6 +18,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api")
 	{
+		export := api.Group("export")
+		{
+			export.GET("proceeds", h.proceeds)
+		}
+
 		balance := api.Group("/balance")
 		{
 			balance.GET("/:user_id", h.show)

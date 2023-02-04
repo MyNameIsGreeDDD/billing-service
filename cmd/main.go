@@ -36,7 +36,7 @@ func main() {
 	handlers := handler.NewHandler(services)
 
 	srv := new(avito_test_case.Server)
-	if err := srv.Run(os.Getenv("APP_PORT"), handlers.InitRoutes()); err != nil {
+	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
 		log.Fatalf("run server error %s", err.Error())
 	}
 }

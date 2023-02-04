@@ -30,3 +30,8 @@ type Transfer struct {
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
 	Value      uint64    `db:"value" json:"value"`
 }
+
+type Proceeds struct {
+	OrderId uint64 `db:"order_id"`
+	Sum     uint64 `db:"sum"`
+}

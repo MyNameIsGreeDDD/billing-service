@@ -3,7 +3,11 @@ package service
 import (
 	avito_test_case "avito-test-case"
 	"avito-test-case/internal/repository"
+	"encoding/csv"
 	"fmt"
+	"os"
+	"strconv"
+	"time"
 )
 
 type BalanceService struct {
@@ -35,14 +39,45 @@ func (u BalanceService) WriteOff(userId, value uint64) error {
 }
 
 func (u BalanceService) TransfersHistory(userId, limit, page uint64, orderBy string) ([]avito_test_case.Transfer, error) {
-	transfers, err := u.repo.TransactionsHistory(userId, limit, page, orderBy)
+	return u.repo.TransactionsHistory(userId, limit, page, orderBy)
+}
+
+func (u BalanceService) GetProceeds(date string) ([]avito_test_case.Proceeds, error) {
+	firstDate, err := time.Parse("2006-01", date)
 	if err != nil {
-		return nil, fmt.Errorf("%s", err.Error())
+		return nil, fmt.Errorf("%s", "cant parse date")
+	}
+	lastDate := firstDate.AddDate(0, 1, 0)
+
+	return u.repo.GetProceeds(firstDate, lastDate)
+}
+
+func (u BalanceService) WriteProceedsToCSV(proceeds []avito_test_case.Proceeds, slug string) (string, error) {
+	columns := []string{"order_id", "sum"}
+	fileName := fmt.Sprintf("%s%s", slug, ".scv")
+
+	file, err := os.Create(fileName)
+	defer file.Close()
+
+	if err != nil {
+		return "", fmt.Errorf("%s", "failed to create file")
 	}
 
-	if len(transfers) == 0 {
-		return nil, fmt.Errorf("%s", "no result set")
+	w := csv.NewWriter(file)
+	defer w.Flush()
+
+	if err := w.Write(columns); err != nil {
+		return "", fmt.Errorf("%s", "failed write to file")
 	}
 
-	return transfers, nil
+	for _, proceed := range proceeds {
+		orderId := strconv.FormatUint(proceed.OrderId, 10)
+		sum := strconv.FormatUint(proceed.Sum, 10)
+
+		if err := w.Write([]string{orderId, sum}); err != nil {
+			return "", fmt.Errorf("%s", "failed write to file")
+		}
+	}
+
+	return fileName, nil
 }

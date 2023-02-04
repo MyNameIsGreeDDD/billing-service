@@ -11,6 +11,8 @@ type Balance interface {
 	WriteOff(userId, value uint64) error
 	Transfer(from, to, value uint64, comment string) error
 	TransfersHistory(userId, limit, page uint64, orderBy string) ([]avito_test_case.Transfer, error)
+	GetProceeds(date string) ([]avito_test_case.Proceeds, error)
+	WriteProceedsToCSV(proceeds []avito_test_case.Proceeds, slug string) (string, error)
 }
 
 type Reservation interface {

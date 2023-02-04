@@ -102,3 +102,16 @@ func (h *Handler) history(c *gin.Context) {
 
 	c.JSON(http.StatusOK, transactions)
 }
+
+func (h *Handler) proceeds(c *gin.Context) {
+	proceeds, err := h.services.Balance.GetProceeds(c.Query("date"))
+	if err != nil {
+		newErrorResponse(c, 400, err.Error())
+		return
+	}
+	path, err := h.services.Balance.WriteProceedsToCSV(proceeds, c.Query("date"))
+
+	c.JSON(http.StatusOK, map[string]string{
+		"success": path,
+	})
+}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 const BalancesTable string = "users_balances"
@@ -180,4 +181,33 @@ func buildTransactionQuery(orderBy string, userId, limit, page uint64) (string, 
 	}
 
 	return query.Limit(limit).Offset(limit*page - limit).PlaceholderFormat(sq.Dollar).ToSql()
+}
+
+func (b BalanceRepository) GetProceeds(firstDate, lastDate time.Time) ([]avito_test_case.Proceeds, error) {
+	var proceeds []avito_test_case.Proceeds
+
+	query, args, err := sq.Select("order_id", "sum(value) as sum").
+		From(PurchasesTable).
+		Where(sq.And{sq.GtOrEq{"created_at": firstDate}, sq.LtOrEq{"created_at": lastDate}}).
+		GroupBy("order_id").
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
+
+	rows, err := b.db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed get proceeds")
+	}
+
+	for rows.Next() {
+		var proceed avito_test_case.Proceeds
+
+		err = rows.Scan(&proceed.OrderId, &proceed.Sum)
+		if err != nil {
+			return nil, fmt.Errorf("failed write result")
+		}
+
+		proceeds = append(proceeds, proceed)
+	}
+
+	return proceeds, nil
 }
