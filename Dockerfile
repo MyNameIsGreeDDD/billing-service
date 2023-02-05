@@ -9,4 +9,4 @@ RUN go mod download
 RUN go build -o avito-test-case ./cmd/main.go
 
 
-CMD ["./billingService"]
+CMD ["./billing-service"]
