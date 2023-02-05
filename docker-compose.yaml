@@ -1,0 +1,48 @@
+version: '3.9'
+
+
+services:
+  postgres:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./database/postgres/data:/var/lib/postgres/data
+    environment:
+      PGPASSWORD: ${DB_HOST}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migration:
+    image: migrate/migrate
+    volumes:
+      - ./schema:/schema
+    command: [ "-path", "./schema", "-database",  "postgres://postgres:secret@postgres:5432/db?sslmode=disable", "up" ]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  billing-service:
+    build: ./
+    command: ./billing-service
+    ports:
+      - "8000:8000"
+    links:
+      - postgres
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USER=${DB_USER}
+      - DB_PORT=${DB_PORT}
+      - DB_SSLMODE=${DB_SSLMODE}
+      - DB_NAME=${DB_NAME}
