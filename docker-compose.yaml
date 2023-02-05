@@ -29,7 +29,7 @@ services:
       postgres:
         condition: service_healthy
 
-  avito-test-case:
+  billing-service:
     build: ./
     command: ./avito-test-case
     ports:
